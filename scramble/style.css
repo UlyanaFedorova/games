@@ -1,0 +1,69 @@
+#image {
+    position: absolute;
+    margin: -230px 0 0 -200px;
+    top: 50%;
+    left: 50%;
+}
+
+#score {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+	margin-left: 250px;
+	margin-top: -230px;
+}
+
+#score p {	
+	font-size: 25pt;
+	font-family: Arial;
+	color: #ff793f;
+}
+
+#task {
+    position: absolute;	
+    top: 0%;
+    left: 50%;
+	margin-left: -450px;
+	margin-top: 20px;
+}
+
+#task p {	
+	font-size: 25pt;
+	font-family: Arial;
+	color: #0fbcf9;
+}
+
+#wordblock {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  position: fixed; 
+  top: 50%;
+  left: 50%;
+  margin-top: 90px;
+  margin-left: -150px;
+  /* prevent text selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}  
+
+
+#wordblock li {
+  margin: 3px 3px 3px 0;
+  padding: 2px;
+  width: 40px;
+  height: 55px;
+  float: left;
+  font-size: 3em;
+  text-align: center;
+  cursor: pointer;
+  font-family: arial;
+  background-color: #0fbcf9;
+  color: white;
+  border-style: none;
+  border-radius: 15px;
+}
