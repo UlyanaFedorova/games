@@ -13,12 +13,12 @@
 			<p id="pic"><img src="images/apple.jpg" width = "400"></p>
 		</div>
 		<div id="task">
-			<p>Как это называется? Расставь буквы в правильном порядке.</p>
+			<p align='center'>Как это называется?<br>Расставь буквы в правильном порядке.</p>
 		</div>
 		<ul id="wordblock">
 		</ul>
 		<div id="score">
-			<p id="score_cnt">Очки: 0</p>
+			<p id="score_cnt">Очки: 0/20</p>
 		</div>
 		<script>
 			var score = 0
@@ -55,7 +55,7 @@
 							$('#wordblock>li').each(function(e) {
 								$(this).css("background-color", '#33d9b2');
 							});
-							$('#score_cnt').text('Score: ' + score);
+							$('#score_cnt').text('Очки: ' + score + '/20');
 							if (level < words.length) {
 								setTimeout(play,2000)
 							}
