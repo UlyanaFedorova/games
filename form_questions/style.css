@@ -73,11 +73,10 @@
 
 #wordblock li {
   margin: 5px 5px 5px 0;
-  padding: 6px 10px;
-  width: 120px;
+  padding: 3px 10px;
   height: 35px;
- // float: left;
-  display: inline;
+  float: left;
+//  display: inline;
   font-size: 19pt;
   text-align: center;
   cursor: pointer;
