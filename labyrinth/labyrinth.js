@@ -3,6 +3,7 @@ window.addEventListener("load",function() {
 
 var timer, playerx, playery, dead, won, lives,answered;
 var score = 0;
+var title = 0;
 var words = [['responsible', 'in', 'un', 'ir', 'il', 'im', 'dis', 3],
 			 ['comfortable', 'anti', 'im', 'dis', 'non', 'un', 'in', 5],
 			 ['legal', 'non', 'il', 'ir', 'un', 'im', 'dis', 2],
@@ -25,10 +26,15 @@ function shuffle(a) {
     return a;
 }			 
 
-words = shuffle(words);
+
 			 
 function game() {
-	lives = 2;
+	Q.audio.stop();
+	Q.audio.play('background.mp3');
+	title = 0;
+	words = shuffle(words);
+//	console.log(words);
+//	lives = 2;
 	dead = 0;
 	score = 0;
 	won = 0;
@@ -38,14 +44,14 @@ function game() {
 
 function time() {
 	timer--;
-	Q('UI.Text', 2).items[0].p.label = '' + timer;
+	Q('UI.Text', 3).items[0].p.label = '' + timer;
 //	Q('UI.Text', 2).items[1].p.label = 'score: ' + score;
-	if ((timer > 0) & !dead & !won & (lives>0)) {
+	if ((timer > 0) & !dead & !won) {
 		setTimeout(time, 1000);
 	}
 	else if (!won) {
 		dead = 1;
-		Q.stageScene("endGame",1 , { label: "Game Over" }); 
+		Q.stageScene('endGame',2 , { label: "Game Over" }); 
 		Q('Player').destroy();
 	}
 	
@@ -106,6 +112,13 @@ window.addEventListener('keydown', function(key) {
 			k = -1;
 		}
 	}	
+	if ((key.which == 13) && Q.stage(2)) {
+		dead = 1;
+		Q.clearStages();
+		Q.stageScene('level1');
+		Q.stageScene('hud', 3);
+		game();
+	}
 });
 Q.Sprite.extend('Player',{
 
@@ -239,7 +252,7 @@ Q.Sprite.extend("Enemy",{
     this.on("bump.left,bump.right,bump.bottom",function(collision) {
       if(collision.obj.isA("Player")) { 
 		dead = 1;
-        Q.stageScene("endGame",1, { label: "Game Over" }); 
+        Q.stageScene("endGame",2, { label: "Game Over" }); 
         collision.obj.destroy();
       }
     });
@@ -258,6 +271,7 @@ Q.Sprite.extend("Enemy",{
 
 Q.scene('title', function(stage) {
   // Add in a repeater for a little parallax action
+  title = 1;
   stage.insert(new Q.Repeater({ asset: "background-wall2.jpg", speedX: 0.5, speedY: 0.5 }));
 
   var container = stage.insert(new Q.UI.Container({
@@ -265,13 +279,20 @@ Q.scene('title', function(stage) {
   }));
 
   var button = container.insert(new Q.UI.Button({ x: 0, y: 0, scale: 0.8,
-                                                  asset: 'start.png' }))         
+                                                  asset: 'start.png' }))
+  container.insert(new Q.UI.Text({x:0, y: 260, 
+										 label: 'music by visager',
+										 align: 'center',
+										 weight: 100,
+										 size: 15,
+										 color: '#664f4f'
+											}));											  
   // When the button is clicked, clear all the stages
   // and restart the game.
   button.on("click",function() {
     Q.clearStages();
     Q.stageScene('level1');
-	Q.stageScene('hud', 2);
+	Q.stageScene('hud', 3);
 	game();
   });
 
@@ -433,10 +454,10 @@ Q.scene('endGame',function(stage) {
 												   }));
   // When the button is clicked, clear all the stages
   // and restart the game.
-  button.on("click",function() {
+  button.on("click",function() { 
     Q.clearStages();
     Q.stageScene('level1');
-	Q.stageScene('hud', 2);
+	Q.stageScene('hud', 3);
 	game();
   });
 
@@ -450,7 +471,7 @@ Q.scene('endGame',function(stage) {
 // Q.load can be called at any time to load additional assets
 // assets that are already loaded will be skipped
 // The callback will be triggered when everything is loaded
-Q.load("start.png, finish.png, finish.json, play_again.png, level.json, tiles.png, background-wall2.jpg, radio.png, radio_filled.png, player.png, player.json, question.png, question.json, enemy.png, enemy.json, jump.mp3, hit.mp3, coin.mp3", function() {
+Q.load("start.png, finish.png, finish.json, play_again.png, level.json, tiles.png, background-wall2.jpg, radio.png, radio_filled.png, player.png, player.json, question.png, question.json, enemy.png, enemy.json, jump.mp3, hit.mp3, coin.mp3, background.mp3", function() {
   // Sprites sheets can be created manually
   Q.sheet("tiles","tiles.png", { tilew: 32, tileh: 32 });
   Q.compileSheets("player.png","player.json");
@@ -469,7 +490,7 @@ Q.load("start.png, finish.png, finish.json, play_again.png, level.json, tiles.pn
  // Q.compileSheets("sprites.png","sprites.json");
 
   // Finally, call stageScene to run the game
-  Q.stageScene('title');
+  Q.stageScene('title', 2);
 //  Q.stageScene('level1');
 //  Q.stageScene('hud', 2);
 // game();
