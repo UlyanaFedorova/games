@@ -1,7 +1,7 @@
 
 window.addEventListener("load",function() {
 
-var timer, playerx, playery, dead, won, lives;
+var timer, playerx, playery, dead, won, lives,answered;
 var score = 0;
 var words = [['responsible', 'in', 'un', 'ir', 'il', 'im', 'dis', 3],
 			 ['comfortable', 'anti', 'im', 'dis', 'non', 'un', 'in', 5],
@@ -14,19 +14,32 @@ var words = [['responsible', 'in', 'un', 'ir', 'il', 'im', 'dis', 3],
 			 ['adventurous', 'un', 'non', 'anti', 'ab', 'dis', 'an', 1],
 			 ['married', 'un', 'in', 'il', 'anti', 'non', 'mis', 1]]
 			 
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}			 
+
+words = shuffle(words);
+			 
 function game() {
 	lives = 2;
 	dead = 0;
 	score = 0;
 	won = 0;
-	timer = 90;
+	timer = 50;
 	time();
 }	
 
 function time() {
 	timer--;
 	Q('UI.Text', 2).items[0].p.label = '' + timer;
-	Q('UI.Text', 2).items[1].p.label = 'score: ' + score;
+//	Q('UI.Text', 2).items[1].p.label = 'score: ' + score;
 	if ((timer > 0) & !dead & !won & (lives>0)) {
 		setTimeout(time, 1000);
 	}
@@ -56,6 +69,44 @@ var Q = window.Q = Quintus({audioSupported: [ 'wav','mp3','ogg' ]})
 // ## Player Sprite
 // The very basic player sprite, this is just a normal sprite
 // using the player sprite sheet with default controls added to it.
+var k = -1;
+window.addEventListener('keydown', function(key) {
+	if (((key.which == 38) || (key.which == 40)) && Q.stage(1) && !answered) {
+		//console.log('test');
+		k += key.which == 38 ? -1: 1;
+		k = k%6;
+		k = k < 0 ? 6 + k : k; 
+		for (i = 0; i < 6; i++) {
+			if (k==i) Q('UI.Button', 1).items[i].p.asset = 'radio_filled.png'; 
+			else Q('UI.Button', 1).items[i].p.asset = 'radio.png';
+		}
+		return;
+	}
+	
+	if ((k > -1) && (key.which == 13) && Q.stage(1)) {
+		//console.log(Q('UI.Container', 1).items[1].fill);
+		var word_n;
+		for (i = 0; i < words.length; i++) {
+			if (words[i][0] == Q('UI.Text', 1).items[1].p.label) {
+				word_n = i;
+			}
+		}
+				
+		
+		if (!answered) {
+			if (k == words[word_n][7] - 1) {
+				Q('UI.Container', 1).items[1].p.fill = 'rgba(154, 236, 219,0.8)';
+				timer += 5;
+			} else {
+				Q('UI.Container', 1).items[1].p.fill = 'rgba(255, 153, 148, 0.8)';
+				timer -= 5;
+			}
+			if (timer>1) setTimeout(recreatePlayer, 1000);
+			answered = 1;
+			k = -1;
+		}
+	}	
+});
 Q.Sprite.extend('Player',{
 
   // the init constructor is called on creation
@@ -118,7 +169,7 @@ Q.Sprite.extend('Player',{
 	  }
 	  this.p.direction = "right";
 	} else if(this.p.vx < 0) {
-	  if(this.p.landed > 0) {//console.log(this.p.x + '#' + this.p.y);
+	  if(this.p.landed > 0) {
 		this.play("walk_left");
 	  } else {
 		this.play("jump_left");
@@ -310,7 +361,7 @@ Q.scene('door',function(stage) {
 										 align: 'center',
 										 weight: 100							
 											}));
-  var answered = 0;
+  answered = 0;
   var i;
   for (i = 0; i < 6; i++) {
 	container.insert(new Q.UI.Text({x:-40, y: buttons[i].p.y - 17, 
@@ -319,17 +370,17 @@ Q.scene('door',function(stage) {
 									 weight: 100
 									 })); 
 	buttons[i].on('click', function() {
+		//console.log(Q('UI.Button', 1).items[0].p.asset);
 		if (!answered) {
 			this.p.asset = 'radio_filled.png';
 			if (this.p.n == stage.options.correct) {
 			container.p.fill = 'rgba(154, 236, 219,0.8)';
-			score += 5;
+			timer += 5;
 			} else {
 			container.p.fill = 'rgba(255, 153, 148, 0.8)';
-			score -= 5;
-			lives -= 1;
+			timer -= 5;
 			}
-			if ((lives>0)&(timer>1)) setTimeout(recreatePlayer, 1000);
+			if (timer>1) setTimeout(recreatePlayer, 1000);
 			answered = 1;
 		}
 
@@ -343,22 +394,20 @@ Q.scene('hud', function(stage) {
     			//fill: 'black',
       	  		//opacity: 0,
       	  		x: 20,
-      	  		y: 20,
+      	  		y: 0,
     		}))
-			
-    	
-    	
+			  	    	
 		label = container.insert(new Q.UI.Text({
 			x: 0,
 			y: 0,
 			label: '' + timer,
 			color: '#664f4f',
 			align: 'left',
-			size: 40,
+			size: 60,
 			weight: 100
 		}))
 		
-		label = container.insert(new Q.UI.Text({
+/* 		label = container.insert(new Q.UI.Text({
 			x: 0,
 			y: 50,
 			label: 'score: ' + score,
@@ -366,7 +415,7 @@ Q.scene('hud', function(stage) {
 			align: 'left',
 			size: 30,
 			weight: 100
-		}))
+		})) */
     	
 });
 
