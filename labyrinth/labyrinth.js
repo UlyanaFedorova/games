@@ -149,10 +149,8 @@ Q.Sprite.extend('Player',{
 	this.on('jump');
     this.on('jumped');
     this.on("hit.sprite",function(collision) {
-
-      // Check the collision, if it's the Tower, you win!
-      if(collision.obj.isA("Tower")) {
-        //Q.stageScene("door",1, { label: "responsible" }); 
+      if(collision.obj.isA("Question")) {
+        //Q.stageScene("ask",1, { label: "responsible" }); 
         this.destroy();
 		playerx = this.p.x;
 		playery = this.p.y;
@@ -196,17 +194,17 @@ Q.Sprite.extend('Player',{
 });
 
 
-// ## Tower Sprite
-// Sprites can be simple, the Tower sprite just sets a custom sprite sheet
-Q.Sprite.extend("Tower", {
+// ## Question Sprite
+// Sprites can be simple, the Question sprite just sets a custom sprite sheet
+Q.Sprite.extend("Question", {
   init: function(p) {
     this._super(p, { sheet: 'question', num: 0, scale: 0.5});
 	
 	this.on("hit.sprite",function(collision) {
 	  Q.audio.play('coin.mp3');
-      // Check the collision, if it's the Tower, you win!
+      // Check the collision, if it's the Question, you win!
       if(collision.obj.isA('Player')) {
-        Q.stageScene('door',1, { word: words[this.p.num][0], 
+        Q.stageScene('ask',1, { word: words[this.p.num][0], 
 		                         ans1: words[this.p.num][1], 
 								 ans2: words[this.p.num][2], 
 								 ans3: words[this.p.num][3], 
@@ -226,7 +224,7 @@ Q.Sprite.extend("Finish", {
 	
 	this.on("hit.sprite",function(collision) {
 
-      // Check the collision, if it's the Tower, you win!
+      // Check the collision, if it's the Question, you win!
       if(collision.obj.isA('Player')) {
 		won = 1;
 		Q.stageScene("endGame",1 , { label: "You Won!" }); 
@@ -330,16 +328,16 @@ Q.scene('level1', function(stage) {
   stage.insert(new Q.Enemy({ x: 410, y: 480 })); 
 
 
-   stage.insert(new Q.Tower({ x: 1790, y: 1050, num: 0 }));
-  stage.insert(new Q.Tower({ x: 740, y: 920, num: 1 }));
-  stage.insert(new Q.Tower({ x: 1480, y: 540, num: 2 }));
-  stage.insert(new Q.Tower({ x: 790, y: 60, num: 3 }));
-  stage.insert(new Q.Tower({ x: 215, y: 800, num: 4 }));
-  stage.insert(new Q.Tower({ x: 813, y: 380, num: 5 }));
-  stage.insert(new Q.Tower({ x: 530, y: 670, num: 6 }));
-  stage.insert(new Q.Tower({ x: 360, y: 350, num: 7 }));
-  stage.insert(new Q.Tower({ x: 1310, y: 257, num: 8 }));
-  stage.insert(new Q.Tower({ x: 1535, y: 65, num: 9 })); 
+   stage.insert(new Q.Question({ x: 1790, y: 1050, num: 0 }));
+  stage.insert(new Q.Question({ x: 740, y: 920, num: 1 }));
+  stage.insert(new Q.Question({ x: 1480, y: 540, num: 2 }));
+  stage.insert(new Q.Question({ x: 790, y: 60, num: 3 }));
+  stage.insert(new Q.Question({ x: 215, y: 800, num: 4 }));
+  stage.insert(new Q.Question({ x: 813, y: 380, num: 5 }));
+  stage.insert(new Q.Question({ x: 530, y: 670, num: 6 }));
+  stage.insert(new Q.Question({ x: 360, y: 350, num: 7 }));
+  stage.insert(new Q.Question({ x: 1310, y: 257, num: 8 }));
+  stage.insert(new Q.Question({ x: 1535, y: 65, num: 9 })); 
   
   stage.insert(new Q.Finish({ x: 1775, y: 57 }));
 });
@@ -348,7 +346,7 @@ Q.scene('level1', function(stage) {
 // create a endGame scene that takes in a `label` option
 // to control the displayed message.
 
-Q.scene('door',function(stage) {
+Q.scene('ask',function(stage) {
   var container0 = stage.insert(new Q.UI.Container({
     x: Q.width/2, y: Q.height/2, radius: 15
   }));
