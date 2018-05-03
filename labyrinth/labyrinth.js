@@ -30,11 +30,9 @@ function shuffle(a) {
 			 
 function game() {
 	Q.audio.stop();
-	Q.audio.play('background.mp3');
+//	Q.audio.play('background.mp3');
 	title = 0;
 	words = shuffle(words);
-//	console.log(words);
-//	lives = 2;
 	dead = 0;
 	score = 0;
 	won = 0;
@@ -45,7 +43,6 @@ function game() {
 function time() {
 	timer--;
 	Q('UI.Text', 3).items[0].p.label = '' + timer;
-//	Q('UI.Text', 2).items[1].p.label = 'score: ' + score;
 	if ((timer > 0) & !dead & !won) {
 		setTimeout(time, 1000);
 	}
@@ -62,23 +59,16 @@ function recreatePlayer() {
 	player = Q.stage().insert(new Q.Player({x: playerx, y: playery}));
 	Q.stage().add("viewport").follow(player);	
 }
-// Set up an instance of the Quintus engine  and include
-// the Sprites, Scenes, Input and 2D module. The 2D module
-// includes the `TileLayer` class as well as the `2d` componet.
+
 var Q = window.Q = Quintus({audioSupported: [ 'wav','mp3','ogg' ]})
         .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, Audio")
-        // Maximize this game to whatever the size of the browser is
         .setup('myGame')
-        // And turn on default input controls and touch input (for UI)
         .controls().touch().enableSound();
 
-// ## Player Sprite
-// The very basic player sprite, this is just a normal sprite
-// using the player sprite sheet with default controls added to it.
 var k = -1;
+
 window.addEventListener('keydown', function(key) {
 	if (((key.which == 38) || (key.which == 40)) && Q.stage(1) && !answered) {
-		//console.log('test');
 		k += key.which == 38 ? -1: 1;
 		k = k%6;
 		k = k < 0 ? 6 + k : k; 
@@ -90,7 +80,6 @@ window.addEventListener('keydown', function(key) {
 	}
 	
 	if ((k > -1) && (key.which == 13) && Q.stage(1)) {
-		//console.log(Q('UI.Container', 1).items[1].fill);
 		var word_n;
 		for (i = 0; i < words.length; i++) {
 			if (words[i][0] == Q('UI.Text', 1).items[1].p.label) {
@@ -120,37 +109,23 @@ window.addEventListener('keydown', function(key) {
 		game();
 	}
 });
+
 Q.Sprite.extend('Player',{
-
-  // the init constructor is called on creation
   init: function(p) {
-
-    // You can call the parent's constructor with this._super(..)
     this._super(p, {
       sheet: 'player', 
-	  sprite: 'player',// Setting a sprite sheet sets sprite width and height
-      x: 410,           // You can also set additional properties that can
+	  sprite: 'player',
+      x: 410,           
       y: 1000,
-	  scale: 0.8,// be overridden on object creation
+	  scale: 0.8,
 	  direction: 'right',
 	  jumpSpeed: -370
     });
-    // Add in pre-made components to get up and running quickly
-    // The `2d` component adds in default 2d collision detection
-    // and kinetics (velocity, gravity)
-    // The `platformerControls` makes the player controllable by the
-    // default input actions (left, right to move,  up or action to jump)
-    // It also checks to make sure the player is on a horizontal surface before
-    // letting them jump.
     this.add('2d, platformerControls, animation, tween');
-
-    // Write event handlers to respond hook into behaviors.
-    // hit.sprite is called everytime the player collides with a sprite
 	this.on('jump');
     this.on('jumped');
     this.on("hit.sprite",function(collision) {
       if(collision.obj.isA("Question")) {
-        //Q.stageScene("ask",1, { label: "responsible" }); 
         this.destroy();
 		playerx = this.p.x;
 		playery = this.p.y;
@@ -160,7 +135,6 @@ Q.Sprite.extend('Player',{
   },
   
   jump: function(obj) {
-    // Only play sound once.
     if (!obj.p.playedJump) {
       Q.audio.play('jump.mp3');
       obj.p.playedJump = true;
@@ -193,16 +167,12 @@ Q.Sprite.extend('Player',{
 
 });
 
-
-// ## Question Sprite
-// Sprites can be simple, the Question sprite just sets a custom sprite sheet
 Q.Sprite.extend("Question", {
   init: function(p) {
     this._super(p, { sheet: 'question', num: 0, scale: 0.5});
 	
 	this.on("hit.sprite",function(collision) {
 	  Q.audio.play('coin.mp3');
-      // Check the collision, if it's the Question, you win!
       if(collision.obj.isA('Player')) {
         Q.stageScene('ask',1, { word: words[this.p.num][0], 
 		                         ans1: words[this.p.num][1], 
@@ -221,32 +191,20 @@ Q.Sprite.extend("Question", {
 Q.Sprite.extend("Finish", {
   init: function(p) {
     this._super(p, { sheet: 'finish', scale: 1});
-	
 	this.on("hit.sprite",function(collision) {
-
-      // Check the collision, if it's the Question, you win!
       if(collision.obj.isA('Player')) {
 		won = 1;
 		Q.stageScene("endGame",1 , { label: "You Won!" }); 
-        //this.destroy();
 		Q('Player').destroy();
       }
 	}); 
   } 
 });
 
-// ## Enemy Sprite
-// Create the Enemy class to add in some baddies
 Q.Sprite.extend("Enemy",{
   init: function(p) {
     this._super(p, { sheet: 'enemy', vx: 100 });
-
-    // Enemies use the Bounce AI to change direction 
-    // whenver they run into something.
     this.add('2d, aiBounce');
-
-    // Listen for a sprite collision, if it's the player,
-    // end the game unless the enemy is hit on top
     this.on("bump.left,bump.right,bump.bottom",function(collision) {
       if(collision.obj.isA("Player")) { 
 		dead = 1;
@@ -255,8 +213,6 @@ Q.Sprite.extend("Enemy",{
       }
     });
 
-    // If the enemy gets hit on the top, destroy it
-    // and give the user a "hop"
     this.on("bump.top",function(collision) {
       if(collision.obj.isA("Player")) {
 		Q.audio.play('hit.mp3')
@@ -268,7 +224,6 @@ Q.Sprite.extend("Enemy",{
 });
 
 Q.scene('title', function(stage) {
-  // Add in a repeater for a little parallax action
   title = 1;
   stage.insert(new Q.Repeater({ asset: "background-wall2.jpg", speedX: 0.5, speedY: 0.5 }));
 
@@ -285,8 +240,7 @@ Q.scene('title', function(stage) {
 										 size: 15,
 										 color: '#664f4f'
 											}));											  
-  // When the button is clicked, clear all the stages
-  // and restart the game.
+
   button.on("click",function() {
     Q.clearStages();
     Q.stageScene('level1');
@@ -294,31 +248,21 @@ Q.scene('title', function(stage) {
 	game();
   });
 
-  // Expand the container to visibily fit it's contents
-  // (with a padding of 20 pixels)
   container.fit(20);
 }); 
-// ## Level1 scene
-// Create a new scene called level 1
+
 Q.scene('level1', function(stage) {
 
-  // Add in a repeater for a little parallax action
   stage.insert(new Q.Repeater({ asset: "background-wall2.jpg", speedX: 0.5, speedY: 0.5 }));
 
-  // Add in a tile layer, and make it the collision layer
   stage.collisionLayer(new Q.TileLayer({
                              dataAsset: 'level.json',
                              sheet:     'tiles' }));
 
-
-  // Create the player and add them to the stage
   var player = stage.insert(new Q.Player());
 
-  // Give the stage a moveable viewport and tell it
-  // to follow the player.
   stage.add("viewport").follow(player);
 
-  // Add in a couple of enemies
   stage.insert(new Q.Enemy({ x: 1100, y: 1100 }));
   stage.insert(new Q.Enemy({ x: 1100, y: 960 }));
   stage.insert(new Q.Enemy({ x: 1300, y: 960 }));
@@ -327,8 +271,7 @@ Q.scene('level1', function(stage) {
   stage.insert(new Q.Enemy({ x: 1200, y: 480 }));
   stage.insert(new Q.Enemy({ x: 410, y: 480 })); 
 
-
-   stage.insert(new Q.Question({ x: 1790, y: 1050, num: 0 }));
+  stage.insert(new Q.Question({ x: 1790, y: 1050, num: 0 }));
   stage.insert(new Q.Question({ x: 740, y: 920, num: 1 }));
   stage.insert(new Q.Question({ x: 1480, y: 540, num: 2 }));
   stage.insert(new Q.Question({ x: 790, y: 60, num: 3 }));
@@ -341,10 +284,6 @@ Q.scene('level1', function(stage) {
   
   stage.insert(new Q.Finish({ x: 1775, y: 57 }));
 });
-
-// To display a game over / game won popup box, 
-// create a endGame scene that takes in a `label` option
-// to control the displayed message.
 
 Q.scene('ask',function(stage) {
   var container0 = stage.insert(new Q.UI.Container({
@@ -389,7 +328,6 @@ Q.scene('ask',function(stage) {
 									 weight: 100
 									 })); 
 	buttons[i].on('click', function() {
-		//console.log(Q('UI.Button', 1).items[0].p.asset);
 		if (!answered) {
 			this.p.asset = 'radio_filled.png';
 			if (this.p.n == stage.options.correct) {
@@ -410,8 +348,6 @@ Q.scene('ask',function(stage) {
 
 Q.scene('hud', function(stage) {    	
     	var container = stage.insert(new Q.UI.Container({
-    			//fill: 'black',
-      	  		//opacity: 0,
       	  		x: 20,
       	  		y: 0,
     		}))
@@ -425,17 +361,6 @@ Q.scene('hud', function(stage) {
 			size: 60,
 			weight: 100
 		}))
-		
-/* 		label = container.insert(new Q.UI.Text({
-			x: 0,
-			y: 50,
-			label: 'score: ' + score,
-			color: '#664f4f',
-			align: 'left',
-			size: 30,
-			weight: 100
-		})) */
-    	
 });
 
 Q.scene('endGame',function(stage) {
@@ -450,27 +375,17 @@ Q.scene('endGame',function(stage) {
 												   color: '#775c5c',
 												   size: 50
 												   }));
-  // When the button is clicked, clear all the stages
-  // and restart the game.
+
   button.on("click",function() { 
     Q.clearStages();
     Q.stageScene('level1');
 	Q.stageScene('hud', 3);
 	game();
   });
-
-  // Expand the container to visibily fit it's contents
-  // (with a padding of 20 pixels)
   container.fit(20);
 });
 
-
-// ## Asset Loading and Game Launch
-// Q.load can be called at any time to load additional assets
-// assets that are already loaded will be skipped
-// The callback will be triggered when everything is loaded
-Q.load("start.png, finish.png, finish.json, play_again.png, level.json, tiles.png, background-wall2.jpg, radio.png, radio_filled.png, player.png, player.json, question.png, question.json, enemy.png, enemy.json, jump.mp3, hit.mp3, coin.mp3, background.mp3", function() {
-  // Sprites sheets can be created manually
+Q.load("start.png, finish.png, finish.json, play_again.png, level.json, tiles.png, background-wall2.jpg, radio.png, radio_filled.png, player.png, player.json, question.png, question.json, enemy.png, enemy.json, jump.mp3, hit.mp3, coin.mp3", function() {
   Q.sheet("tiles","tiles.png", { tilew: 32, tileh: 32 });
   Q.compileSheets("player.png","player.json");
   Q.compileSheets("finish.png","finish.json");
@@ -484,25 +399,6 @@ Q.load("start.png, finish.png, finish.json, play_again.png, level.json, tiles.pn
       stand_right: { frames:[11], rate: 1/10, flip: false },
       stand_left: { frames: [11], rate: 1/10, flip:"x" },
     });
-  // Or from a .json asset that defines sprite locations
- // Q.compileSheets("sprites.png","sprites.json");
-
-  // Finally, call stageScene to run the game
   Q.stageScene('title', 2);
-//  Q.stageScene('level1');
-//  Q.stageScene('hud', 2);
-// game();
 });
-
-// ## Possible Experimentations:
-// 
-// The are lots of things to try out here.
-// 
-// 1. Modify level.json to change the level around and add in some more enemies.
-// 2. Add in a second level by creating a level2.json and a level2 scene that gets
-//    loaded after level 1 is complete.
-// 3. Add in a title screen
-// 4. Add in a hud and points for jumping on enemies.
-// 5. Add in a `Repeater` behind the TileLayer to create a paralax scrolling effect.
-
 });
