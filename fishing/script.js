@@ -77,18 +77,34 @@ Q.Sprite.extend("Player",{
   },
 
   step: function(dt) {
-    this.p.x += this.p.speedx;
+    //this.p.x += this.p.speedx;
 
     if(this.p.y > 500) {
       this.p.y = 500;
     } else if (this.p.y < 200){
       this.p.y = 200;
     }
+	
+    if(this.p.x > 500) {
+      this.p.x = 500;
+    } else if (this.p.x < 10){
+      this.p.x = 10;
+    }	
 
     if(Q.inputs['up']) {
       //this.p.vy = this.p.jump;
 	  this.p.y -= this.p.speedy;
-    } 
+    }
+    
+	if(Q.inputs['left']) {
+      //this.p.vy = this.p.jump;
+	  this.p.x -= this.p.speedy;
+    }
+
+	if(Q.inputs['right']) {
+      //this.p.vy = this.p.jump;
+	  this.p.x += this.p.speedy;
+    }
 	
 	if(Q.inputs['down']) {
       //this.p.vy = this.p.jump;
@@ -99,7 +115,7 @@ Q.Sprite.extend("Player",{
     this.play("swim");
 	//this.p.points = this.p.standingPoints;
 
-    this.stage.viewport.centerOn(this.p.x + 200, 300 );
+    this.stage.viewport.centerOn(40 + 200, 300 );
 
   }
 });
@@ -117,7 +133,7 @@ Q.Sprite.extend("Fish",{
  //     scale: 2,
 //      type: SPRITE_BOX,
  //     sheet: "crates",
-      vx: -50 + 0 * Math.random(),
+      vx: -100 + 0 * Math.random(),
 	  w: 50,
 	  h: 50,
 	  word: 'word',
@@ -149,9 +165,9 @@ Q.Sprite.extend("Fish",{
   
   step: function(dt) {
     this.p.x += this.p.vx * dt;
-    if(Q("Player").first() && (Q("Player").first().p.x - this.p.x > 400)) { 
-		this.destroy(); 
-	}
+    //if(Q("Player").first() && (Q("Player").first().p.x - this.p.x > 400)) { 
+	//	this.destroy(); 
+	//}
 
   },
 
@@ -180,7 +196,7 @@ Q.Sprite.extend("Fish",{
 Q.GameObject.extend("FishSource",{
   init: function() {
     this.p = {
-      launchDelay: 1,
+      launchDelay: 1.5,
       launchRandom: 1,
       launch: 2,
 	  counter: 0,
