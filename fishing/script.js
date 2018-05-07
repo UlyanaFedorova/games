@@ -9,7 +9,12 @@ var sentences = ["Detroid is renowned for the ....... of cars.",
 				 "The weatherman said there is a strong ....... of rain today.",
 				 "Some old laws are no longer .......",
 				 "Athens is ....... for its ancient buildings.",
-				 "He was caught shoplifting so now he has a ....... record."]
+				 "He was caught shoplifting so now he has a ....... record.",
+				 "Despite her severe ......., she fulfilled her goals in life",
+				 "Being ....... is the worst thing that can happen to someone.",
+				 "If you buy presents in the summer your ....... can be very high.",
+				 "Due to the pilot's ......., the copilot managed to land safely.",
+				 "It's important to also see the less ....... sides of the job."]
 var words = [['production', 'produce', 'product', 'producsion', 'productivity'],
 			 ['impression', 'impress', 'impressive', 'impressiveness', 'impressivity'],
 			 ['occupation', 'occupier', 'occupy', 'occupasion', 'occupanity'],
@@ -19,7 +24,12 @@ var words = [['production', 'produce', 'product', 'producsion', 'productivity'],
 			 ['possibility', 'possibilism', 'possible', 'possibleness', 'possibilitate'],
 			 ['effective', 'effect', 'uneffective', 'effectless', 'effecting'],
 			 ['famous', 'fame', 'familiar', 'infamous', 'famously'],
-			 ['crime', 'criminaldom', 'criminal', 'criminality', 'criming']]
+			 ['crime', 'criminaldom', 'criminal', 'criminality', 'criming'],
+			 ['disability', 'disablement', 'disable', 'disableness', 'disabling'],
+			 ['unemployed', 'inemployed', 'employ', 'employer', 'employless'],
+			 ['savings', 'savior', 'saveness', 'safety', 'savailability'], 
+			 ['guidance',, 'guide', 'guidence', 'guideness'],
+			 ['desirable', 'desiring', 'desirible', 'undesirable', 'desirous']]
 var level = 0;
 var score = 0;
 
@@ -91,30 +101,23 @@ Q.Sprite.extend("Player",{
       this.p.x = 10;
     }	
 
-    if(Q.inputs['up']) {
-      //this.p.vy = this.p.jump;
+    if(Q.inputs["up"]) {
 	  this.p.y -= this.p.speedy;
     }
     
-	if(Q.inputs['left']) {
-      //this.p.vy = this.p.jump;
+	if(Q.inputs["left"]) {
 	  this.p.x -= this.p.speedy;
     }
 
-	if(Q.inputs['right']) {
-      //this.p.vy = this.p.jump;
+	if(Q.inputs["right"]) {
 	  this.p.x += this.p.speedy;
     }
 	
-	if(Q.inputs['down']) {
-      //this.p.vy = this.p.jump;
-	  this.p.y += this.p.speedy;
-	  
+	if(Q.inputs["down"]) {
+	  this.p.y += this.p.speedy;	  
     } 
 
     this.play("swim");
-	//this.p.points = this.p.standingPoints;
-
     this.stage.viewport.centerOn(40 + 200, 300 );
 
   }
@@ -129,10 +132,6 @@ Q.Sprite.extend("Fish",{
     this._super(p, {
       x: player.p.x + Q.width + 50,
       y: levels[Math.floor(Math.random() * 4)],
- //     frame: Math.random() < 0.5 ? 1 : 0,
- //     scale: 2,
-//      type: SPRITE_BOX,
- //     sheet: "crates",
       vx: -100 + 0 * Math.random(),
 	  w: 50,
 	  h: 50,
@@ -153,11 +152,8 @@ Q.Sprite.extend("Fish",{
 	var size = text_w + 60;
 	ctx.drawImage(drawing, 0, 0, size, size*drawing.height/drawing.width);
     ctx.fillStyle = this.p.color;
-    // Draw a filled rectangle centered at
-    // 0,0 (i.e. from -w/2,-h2 to w/2, h/2)
 	ctx.font = '15px Arial';
 	ctx.fillStyle = 'white';
-	//ctx.fillText(this.p.word, 5*size/12 + 3, size/6);
 	ctx.fillText(this.p.word, 5*size/12 + 3, size*drawing.height/drawing.width*3/8 - 100/size);
 	
 
@@ -165,10 +161,6 @@ Q.Sprite.extend("Fish",{
   
   step: function(dt) {
     this.p.x += this.p.vx * dt;
-    //if(Q("Player").first() && (Q("Player").first().p.x - this.p.x > 400)) { 
-	//	this.destroy(); 
-	//}
-
   },
 
   hit: function() {
@@ -177,6 +169,7 @@ Q.Sprite.extend("Fish",{
 		Q.audio.play('eat_1.mp3');
 		score++;
 		level++;
+		level = level%sentences.length;
 		Q.stageScene("sentence", 1);
 	} else {
 		Q.audio.play('nope.mp3');
@@ -185,7 +178,6 @@ Q.Sprite.extend("Fish",{
 	}
     this.destroy();
 	Q('UI.Text', 2).items[0].p.label = 'Score: ' + score;
-	//Q('UI.Text', 2).items[1].p.label = 'Lives: ' + player.p.lives;
 	if (player.p.lives <= 0) {
 		player.destroy();
 		Q.stageScene("GameOver", 2);
@@ -245,14 +237,7 @@ Q.scene("level1",function(stage) {
 
   stage.insert(new Q.Repeater({ asset: "background-wall.png",
                                 speedX: 0.5 }));
-
-  /*stage.insert(new Q.Repeater({ asset: "background-floor.png",
-                                repeatY: false,
-                                speedX: 1.0,
-                                y: 300 }));*/
-
-  stage.insert(new Q.FishSource());
-  
+  stage.insert(new Q.FishSource()); 
   stage.insert(new Q.Player());
   stage.add("viewport");
 
@@ -261,8 +246,6 @@ Q.scene("level1",function(stage) {
 
 Q.scene('sentence', function(stage) {    	
     	var container = stage.insert(new Q.UI.Container({
-    			//fill: 'black',
-      	  		//opacity: 0,
       	  		x: 20,
       	  		y: 530,
     		}));
@@ -272,13 +255,11 @@ Q.scene('sentence', function(stage) {
 		var text_w = Q.ctx.measureText(sentences[level]).width;
 		var size = Math.floor(base_w/text_w*30);
 		
-		//console.log(size);
 		label = container.insert(new Q.UI.Text({
 			x: Q.width/2,
 			y: 0,
 			label: sentences[level],
 			color: 'white',
-			//align: 'center',
 			size: size,
 			weight: 100
 		}));
@@ -294,7 +275,6 @@ Q.scene('hud', function(stage) {
 			y: 20,
 			label: 'Score: 0',
 			color: 'white',
-			//align: 'center',
 			size: 30,
 			weight: 100
 		}));
@@ -329,17 +309,14 @@ Q.scene('GameOver', function(stage) {
 			y: 20,
 			label: 'Score: ' + score,
 			color: 'white',
-			//align: 'center',
 			size: 25,
 			weight: 100,
 		}));	
-		//console.log(size);
 		container.insert(new Q.UI.Text({
 			x: Q.width/2,
 			y: Q.height/2 - 100,
 			label: 'Game Over',
 			color: 'white',
-			//align: 'center',
 			size: 40,
 			weight: 100
 		}));
@@ -368,11 +345,5 @@ Q.load("player.json, player.png, background-wall.png, background-floor.png, life
       swim: { frames: [0,1,2,3,4,5], rate: 1/8, flip: false, loop: true },
     });
 	Q.stageScene("title");
-//    Q.stageScene("level1");
-//	Q.stageScene("sentence", 1);
-//	Q.stageScene("hud", 2);
-  
 });
-
-
 });
