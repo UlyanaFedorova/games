@@ -1,5 +1,5 @@
 window.addEventListener("load",function() {
-
+//test
 var sentences = ["Detroid is renowned for the ....... of cars.",
                  "If you make a good ....... at the interview, you will get the job.",
 				 "Teaching and medicine are more than ......., they're professions.", 
