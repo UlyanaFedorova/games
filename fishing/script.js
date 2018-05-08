@@ -1,6 +1,6 @@
 window.addEventListener("load",function() {
 
-var sentences = ["Detroid is renowned for the ....... of cars.",
+var sentences = ["Detroit is renowned for the ....... of cars.",
                  "If you make a good ....... at the interview, you will get the job.",
 				 "Teaching and medicine are more than ......., they're professions.", 
 				 "My history teacher has a vast ....... of past events.",
@@ -210,6 +210,7 @@ Q.GameObject.extend("FishSource",{
 });
 
 Q.scene('title', function(stage) {
+	    Q.audio.play('background.mp3',{ loop: true });
 		stage.insert(new Q.Repeater({ asset: "background-wall.png",
                                 speedX: 0.5 }));
     	var container = stage.insert(new Q.UI.Container({
@@ -339,7 +340,7 @@ Q.scene('GameOver', function(stage) {
 		
 });
   
-Q.load("player.json, player.png, background-wall.png, background-floor.png, life.png, eat_1.mp3, nope.mp3, start.png", function() {
+Q.load("player.json, player.png, background-wall.png, background-floor.png, life.png, eat_1.mp3, nope.mp3, start.png, background.mp3", function() {
     Q.compileSheets("player.png","player.json");
     Q.animations("player", {
       swim: { frames: [0,1,2,3,4,5], rate: 1/8, flip: false, loop: true },
