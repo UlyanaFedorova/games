@@ -29,7 +29,7 @@ window.addEventListener("load", function() {
 
 	function game() {
 		Q.audio.stop();
-		//	Q.audio.play('background.mp3');
+		Q.audio.play('background.mp3');
 		title = 0;
 		words = shuffle(words);
 		dead = 0;
@@ -64,7 +64,7 @@ window.addEventListener("load", function() {
 	}
 
 	var Q = window.Q = Quintus({
-			audioSupported: ['wav', 'mp3', 'ogg']
+			audioSupported: ['mp3', 'ogg']
 		})
 		.include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, Audio")
 		.setup('myGame')
@@ -542,7 +542,7 @@ window.addEventListener("load", function() {
 		container.fit(20);
 	});
 
-	Q.load("start.png, finish.png, finish.json, play_again.png, level.json, tiles.png, background-wall2.jpg, radio.png, radio_filled.png, player.png, player.json, question.png, question.json, enemy.png, enemy.json, jump.mp3, hit.mp3, coin.mp3", function() {
+	Q.load("start.png, finish.png, finish.json, play_again.png, level.json, tiles.png, background-wall2.jpg, radio.png, radio_filled.png, player.png, player.json, question.png, question.json, enemy.png, enemy.json, jump.mp3, hit.mp3, coin.mp3, background.mp3", function() {
 		Q.sheet("tiles", "tiles.png", {
 			tilew: 32,
 			tileh: 32
